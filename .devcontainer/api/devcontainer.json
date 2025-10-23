@@ -1,0 +1,17 @@
+{
+    "name": "connect-http-method-playground-api",
+    "dockerComposeFile": ["../compose.yaml", "./compose.yaml"],
+    "service": "api",
+    "workspaceFolder": "/workspace/api",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "golang.Go",
+                "GitHub.copilot",
+                "RooVeterinaryInc.roo-cline",
+                "bufbuild.vscode-buf"
+            ]
+        }
+    },
+    "remoteUser": "root"
+}

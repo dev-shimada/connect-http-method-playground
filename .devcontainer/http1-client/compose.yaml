@@ -1,0 +1,8 @@
+services:
+  http1-client:
+    build:
+      context: ../http1-client
+      dockerfile: ../.devcontainer/http1-client/Dockerfile
+    volumes:
+      - ..:/workspace:cached
+    command: sleep infinity

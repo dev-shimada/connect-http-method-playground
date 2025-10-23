@@ -1,0 +1,17 @@
+{
+    "name": "connect-http-method-playground-grpc-client",
+    "dockerComposeFile": ["../compose.yaml", "./compose.yaml"],
+    "service": "grpc-client",
+    "workspaceFolder": "/workspace/grpc-client",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "golang.Go",
+                "GitHub.copilot",
+                "RooVeterinaryInc.roo-cline",
+                "bufbuild.vscode-buf"
+            ]
+        }
+    },
+    "remoteUser": "root"
+}

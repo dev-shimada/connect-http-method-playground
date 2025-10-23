@@ -1,0 +1,17 @@
+{
+    "name": "connect-http-method-playground-http1-client",
+    "dockerComposeFile": ["../compose.yaml", "./compose.yaml"],
+    "service": "http1-client",
+    "workspaceFolder": "/workspace/http1-client",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "golang.Go",
+                "GitHub.copilot",
+                "RooVeterinaryInc.roo-cline",
+                "bufbuild.vscode-buf"
+            ]
+        }
+    },
+    "remoteUser": "root"
+}

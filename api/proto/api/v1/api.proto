@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package api.v1;
+
+option go_package = "github.com/dev-shimada/connect-http-method-playground/api/gen/api/v1;apiv1";
+
+service ApiService {
+  rpc Post(PostRequest) returns (PostResponse);
+  rpc Get(GetRequest) returns (GetResponse);
+  rpc PingPong(PingPongRequest) returns (PingPongResponse);
+}
+
+message PostRequest {
+  string user_id = 1;
+  string text = 2;
+}
+
+message PostResponse {
+  string id = 1;
+}
+
+message GetRequest {
+  string id = 1;
+}
+
+message GetResponse {
+  string user_id = 1;
+  string text = 2;
+}
+
+message PingPongRequest {
+  string user_id = 1;
+  string text = 2;
+}
+
+message PingPongResponse {
+  string user_id = 1;
+  string text = 2;
+}
