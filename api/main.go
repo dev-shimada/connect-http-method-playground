@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"log/slog"
@@ -135,6 +136,27 @@ func main() {
 		apiv1connect.ApiServiceName,
 	)
 	mux.Handle(grpchealth.NewHandler(checker))
+
+	// http/1.1 pingpong endpoint
+	mux.HandleFunc("/pingpong", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			w.WriteHeader(http.StatusOK)
+			res := &apiv1.PingPongResponse{
+				UserId: r.URL.Query().Get("user_id"),
+				Text:   r.URL.Query().Get("text"),
+			}
+			if bytes, err := json.Marshal(res); err == nil {
+				w.Write(bytes)
+			} else {
+				slog.Error("Failed to marshal response", "error", err)
+				w.WriteHeader(http.StatusInternalServerError)
+			}
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+	})
 
 	svc := &server{
 		Server: &http.Server{
