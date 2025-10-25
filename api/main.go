@@ -28,6 +28,7 @@ const (
 
 type server struct {
 	*http.Server
+	repository MessageRepository
 }
 
 // domain model
@@ -78,8 +79,7 @@ func (s *server) Post(ctx context.Context, req *connect.Request[apiv1.PostReques
 		Text:   req.Msg.Text,
 	}
 
-	repository := NewRepository()
-	if err := repository.Save(ctx, msg); err != nil {
+	if err := s.repository.Save(ctx, msg); err != nil {
 		slog.Error("Failed to save message", "error", err)
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to save message: %w", err))
 	}
@@ -94,8 +94,7 @@ func (s *server) Post(ctx context.Context, req *connect.Request[apiv1.PostReques
 func (s *server) Get(ctx context.Context, req *connect.Request[apiv1.GetRequest]) (*connect.Response[apiv1.GetResponse], error) {
 	slog.Info("Received Get request", "id", req.Msg.Id)
 
-	repository := NewRepository()
-	msg, err := repository.Get(ctx, req.Msg.Id)
+	msg, err := s.repository.Get(ctx, req.Msg.Id)
 	if err != nil {
 		slog.Error("Failed to get message", "error", err)
 		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("message not found: %w", err))
@@ -107,6 +106,61 @@ func (s *server) Get(ctx context.Context, req *connect.Request[apiv1.GetRequest]
 			Text:   msg.Text,
 		},
 	}, nil
+}
+
+func (s *server) Rest(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		msg, err := s.repository.Get(r.Context(), r.URL.Query().Get("id"))
+		if err != nil {
+			slog.Error("Failed to get message", "error", err)
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		res := &apiv1.GetResponse{
+			UserId: msg.UserID,
+			Text:   msg.Text,
+		}
+		w.WriteHeader(http.StatusOK)
+		if bytes, err := json.Marshal(res); err == nil {
+			w.Write(bytes)
+		} else {
+			slog.Error("Failed to marshal response", "error", err)
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+	case http.MethodPost:
+		var req apiv1.PostRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			slog.Error("Failed to decode request body", "error", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		id := uuid.NewString()
+		if err := s.repository.Save(r.Context(), Message{
+			ID:     id,
+			UserID: req.UserId,
+			Text:   req.Text,
+		}); err != nil {
+			slog.Error("Failed to save message", "error", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		res := &apiv1.PostResponse{
+			Id: id,
+		}
+		w.WriteHeader(http.StatusOK)
+		if bytes, err := json.Marshal(res); err == nil {
+			w.Write(bytes)
+		} else {
+			slog.Error("Failed to marshal response", "error", err)
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
 }
 
 func (s *server) PingPong(ctx context.Context, req *connect.Request[apiv1.PingPongRequest]) (*connect.Response[apiv1.PingPongResponse], error) {
@@ -137,8 +191,23 @@ func main() {
 	)
 	mux.Handle(grpchealth.NewHandler(checker))
 
+	svc := &server{
+		Server: &http.Server{
+			Addr:    fmt.Sprintf("%s:%d", Host, Port),
+			Handler: h2c.NewHandler(mux, &http2.Server{}),
+		},
+		repository: NewRepository(),
+	}
+
+	// api
+	path, handler := apiv1connect.NewApiServiceHandler(svc)
+	mux.Handle(path, handler)
+
+	// http/1.1 base endpoint
+	mux.HandleFunc("/api/v1/ApiService", svc.Rest)
+
 	// http/1.1 pingpong endpoint
-	mux.HandleFunc("/pingpong", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/api/v1/ApiService/PingPong", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			w.WriteHeader(http.StatusOK)
@@ -157,17 +226,6 @@ func main() {
 			return
 		}
 	})
-
-	svc := &server{
-		Server: &http.Server{
-			Addr:    fmt.Sprintf("%s:%d", Host, Port),
-			Handler: h2c.NewHandler(mux, &http2.Server{}),
-		},
-	}
-
-	// api
-	path, handler := apiv1connect.NewApiServiceHandler(svc)
-	mux.Handle(path, handler)
 
 	// start server
 	signalCtx, _ := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)

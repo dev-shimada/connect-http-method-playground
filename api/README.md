@@ -80,6 +80,16 @@ a4ddbcb1-7a8d-4f25-8a94-ea5ca7fe0b4b
 
 ## http/1.1
 ```console
-# curl "localhost:8081/pingpong?user_id=test_id&text=hello!"
+# curl "localhost:8081/api/v1/ApiService/PingPong?user_id=test_id&text=hello!"
 {"userId":"test_id","text":"hello!"}
+```
+```console
+# uuidgen
+a4ddbcb1-7a8d-4f25-8a94-ea5ca7fe0b4b
+# curl --json '{"user_id": "a4ddbcb1-7a8d-4f25-8a94-ea5ca7fe0b4b", "text": "hello! from curl"}' localhost:8081/api/v1/ApiService
+{"id":"01975d21-0d2a-7ee8-85de-ba5764e23a1d"}
+```
+```console
+# curl localhost:8081/api/v1/ApiService?id=01975d21-0d2a-7ee8-85de-ba5764e23a1d
+{"userId":"a4ddbcb1-7a8d-4f25-8a94-ea5ca7fe0b4b","text":"hello! from curl"}
 ```

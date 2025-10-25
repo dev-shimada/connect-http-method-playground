@@ -1,6 +1,6 @@
 module github.com/dev-shimada/connect-http-method-playground/api
 
-go 1.24.3
+go 1.25.3
 
 require (
 	connectrpc.com/connect v1.19.1
