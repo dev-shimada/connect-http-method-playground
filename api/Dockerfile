@@ -9,7 +9,6 @@ WORKDIR /workspace
 COPY go.mod /workspace
 COPY go.sum /workspace
 RUN go mod download
-COPY ent /workspace/ent
 COPY gen /workspace/gen
 COPY main.go /workspace
 

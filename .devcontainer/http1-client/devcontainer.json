@@ -3,6 +3,9 @@
     "dockerComposeFile": ["../compose.yaml", "./compose.yaml"],
     "service": "http1-client",
     "workspaceFolder": "/workspace/http1-client",
+    "mounts": [
+        "source=${env:HOME}/.claude,target=/root/.claude,type=bind"
+    ],
     "customizations": {
         "vscode": {
             "extensions": [

@@ -11,8 +11,8 @@ services:
   #     context: ../grpc-client
   #     dockerfile: ../grpc-client/Dockerfile
   #   image: connect-http-method-playground-grpc-client
-  # http1-client:
-  #   build:
-  #     context: ../http1-client
-  #     dockerfile: ../http1-client/Dockerfile
-  #   image: connect-http-method-playground-http1-client
+  http1-client:
+    build:
+      context: ../http1-client
+      dockerfile: ../http1-client/Dockerfile
+    image: connect-http-method-playground-http1-client
