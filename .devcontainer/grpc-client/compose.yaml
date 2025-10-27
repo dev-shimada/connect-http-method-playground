@@ -5,4 +5,5 @@ services:
       dockerfile: ../.devcontainer/grpc-client/Dockerfile
     volumes:
       - ..:/workspace:cached
+      - ../api/proto:/workspace/grpc-client/proto:ro,cached
     command: sleep infinity

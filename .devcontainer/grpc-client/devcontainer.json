@@ -3,6 +3,9 @@
     "dockerComposeFile": ["../compose.yaml", "./compose.yaml"],
     "service": "grpc-client",
     "workspaceFolder": "/workspace/grpc-client",
+    "mounts": [
+        "source=${env:HOME}/.claude,target=/root/.claude,type=bind"
+    ],
     "customizations": {
         "vscode": {
             "extensions": [
