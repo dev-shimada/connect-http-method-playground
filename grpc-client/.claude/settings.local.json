@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(go build)",
+      "Read(//workspace/api/gen/**)",
+      "Read(//workspace/api/**)",
+      "Bash(buf generate)",
+      "Bash(go mod tidy)",
+      "Bash(./grpc-client)",
+      "Bash(timeout 3 ./grpc-client)",
+      "Bash(echo \"Exit code: $?\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,0 +1,9 @@
+services:
+  grpc-client-python:
+    build:
+      context: ../grpc-client-python
+      dockerfile: ../.devcontainer/grpc-client-python/Dockerfile
+    volumes:
+      - ..:/workspace:cached
+      - ../api/proto:/workspace/grpc-client-python/proto:ro,cached
+    command: sleep infinity

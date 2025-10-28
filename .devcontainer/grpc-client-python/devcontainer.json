@@ -1,0 +1,19 @@
+{
+    "name": "connect-http-method-playground-grpc-client-python",
+    "dockerComposeFile": ["../compose.yaml", "./compose.yaml"],
+    "service": "grpc-client-python",
+    "workspaceFolder": "/workspace/grpc-client-python",
+    "mounts": [
+        "source=${env:HOME}/.claude,target=/root/.claude,type=bind"
+    ],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "GitHub.copilot",
+                "bufbuild.vscode-buf"
+            ]
+        }
+    },
+    "remoteUser": "root"
+}
