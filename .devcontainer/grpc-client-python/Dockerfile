@@ -4,7 +4,7 @@ ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 ARG TARGETOS
 ARG TARGETARCH
-ENV ENV PYTHONPATH=/workspace/grpc-client-python/gen
+ENV PYTHONPATH=/workspace/grpc-client-python/gen
 
 WORKDIR /workspace/grpc-client-python
 
@@ -24,7 +24,7 @@ EOF
 COPY pyproject.toml /workspace/grpc-client-python/
 
 RUN <<EOF
-pip isntall uv
+pip install uv
 uv pip install --system -r pyproject.toml
 EOF
 
